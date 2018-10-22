@@ -8,14 +8,14 @@ import (
 	"net/http"
 )
 
-func Hello(r *http.Request) handle.Respond {
+func Hello(r *http.Request, _ httprouter.Params) handle.Respond {
 	return func(w http.ResponseWriter) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, "Hello, World!")
 	}
 }
 
-func Empty(r *http.Request) handle.Respond {
+func Empty(r *http.Request, _ httprouter.Params) handle.Respond {
 	return nil
 }
 

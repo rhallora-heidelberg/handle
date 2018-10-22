@@ -1,13 +1,14 @@
 package main
 
 import (
+	"github.com/julienschmidt/httprouter"
 	"github.com/rhallora-heidelberg/handle"
 	"github.com/rhallora-heidelberg/handle/respond-with"
 	"net/http"
 )
 
 // e.g. "http://localhost:8000/bread/getRecipe?name=PompeiiSourdough"
-func getRecipe(r *http.Request) handle.Respond {
+func getRecipe(r *http.Request, _ httprouter.Params) handle.Respond {
 	// parse input
 	name := r.URL.Query().Get("name")
 

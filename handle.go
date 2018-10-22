@@ -14,7 +14,7 @@ func defaultInternalErr(w http.ResponseWriter) {
 	logrus.Errorf("nil handle.Respond called: %s\n", debug.Stack())
 }
 
-func With(f func(r *http.Request) Respond, nilGuard ...Respond) httprouter.Handle {
+func With(f func(r *http.Request, ps httprouter.Params) Respond, nilGuard ...Respond) httprouter.Handle {
 	var internalErr Respond
 
 	if len(nilGuard) > 0 {
@@ -23,7 +23,7 @@ func With(f func(r *http.Request) Respond, nilGuard ...Respond) httprouter.Handl
 		internalErr = defaultInternalErr
 	}
 
-	return func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		if f == nil {
 			internalErr(w)
 			return

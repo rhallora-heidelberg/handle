@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/julienschmidt/httprouter"
 	"github.com/rhallora-heidelberg/handle"
 	"github.com/rhallora-heidelberg/handle/respond-with"
 	"net/http"
@@ -9,7 +10,7 @@ import (
 )
 
 // e.g. "http://localhost:8000/bread/saveRecipe?name=PompeiiSourdough&gFlour=1600&gStarter=200&gWater=950&gSalt=35"
-func saveRecipe(r *http.Request) handle.Respond {
+func saveRecipe(r *http.Request, _ httprouter.Params) handle.Respond {
 	recipe := parseRecipeQuery(r.URL.Query())
 
 	// validate input
