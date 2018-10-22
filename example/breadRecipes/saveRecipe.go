@@ -32,6 +32,7 @@ func parseRecipeQuery(qVals url.Values) doughRecipe {
 	recipe := doughRecipe{
 		Name: qVals.Get("name"),
 	}
+
 	// ugly, but you get the point
 	if n, err := strconv.Atoi(qVals.Get("gFlour")); err == nil {
 		recipe.GFlour = n
