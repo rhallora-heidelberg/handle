@@ -29,7 +29,7 @@ func With(f func(r *http.Request, ps httprouter.Params) Respond, nilGuard ...Res
 			return
 		}
 
-		respond := f(r)
+		respond := f(r, ps)
 
 		if respond == nil {
 			internalErr(w)
