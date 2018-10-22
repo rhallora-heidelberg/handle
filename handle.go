@@ -39,9 +39,3 @@ func With(f func(r *http.Request) Respond, nilGuard ...Respond) httprouter.Handl
 		respond(w)
 	}
 }
-
-type TransformRespond func(func(r *http.Request) Respond) func(r *http.Request) Respond
-
-func Transform(f func(r *http.Request) Respond, transformations ...TransformRespond) Respond {
-
-}
