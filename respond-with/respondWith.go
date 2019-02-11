@@ -1,49 +1,66 @@
 package respondWith
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/rhallora-heidelberg/handle"
 	"net/http"
+	"strings"
+
+	"github.com/rhallora-heidelberg/handle"
 )
 
-func Errorf(status int, message string, v ...interface{}) handle.Respond {
+func Errorf(status int, message string, v ...interface{}) handle.Response {
 	if len(v) > 0 {
 		message = fmt.Sprintf(message, v...)
 	}
 
-	return func(w http.ResponseWriter) {
+	setHeader := func(header http.Header) {
+		header.Set("Content-Type", "text/plain; charset=utf-8")
+		header.Set("X-Content-Type-Options", "nosniff")
+	}
 
-		http.Error(w, message, status)
+	return handle.Response{
+		StatusCode:    status,
+		Body:          strings.NewReader(message),
+		HeaderOptions: []handle.HeaderOption{setHeader},
 	}
 }
 
-func StatusCode(status int) handle.Respond {
-	return func(w http.ResponseWriter) {
-		w.WriteHeader(status)
-		fmt.Fprint(w, http.StatusText(status))
+func StatusCode(status int) handle.Response {
+	return handle.Response{
+		StatusCode: status,
+		Body:       strings.NewReader(http.StatusText(status)),
 	}
 }
 
-func Stringf(message string, v ...interface{}) handle.Respond {
-	return func(w http.ResponseWriter) {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintf(w, message, v...)
+func Stringf(message string, v ...interface{}) handle.Response {
+	if len(v) > 0 {
+		message = fmt.Sprintf(message, v...)
+	}
+
+	return handle.Response{
+		StatusCode: http.StatusOK,
+		Body:       strings.NewReader(message),
 	}
 }
 
-func Bytes(b []byte, status int) handle.Respond {
-	return func(w http.ResponseWriter) {
-		w.WriteHeader(status)
-		w.Write(b)
+func Bytes(b []byte, status int) handle.Response {
+	return handle.Response{
+		StatusCode: status,
+		Body:       bytes.NewReader(b),
 	}
 }
 
-func JSONOrError(obj interface{}, errorHandler handle.Respond) handle.Respond {
+func JSONOrError(obj interface{}) handle.Response {
 	b, err := json.Marshal(obj)
 	if err != nil {
-		return errorHandler
+		return Errorf(http.StatusInternalServerError, "server failed to marshal JSON response")
 	}
 
-	return Bytes(b, http.StatusOK)
+	setHeader := func(hdr http.Header) {
+		hdr.Set("Content-Type", "application/json")
+	}
+
+	return Bytes(b, http.StatusOK).WithHeaderOptions(setHeader)
 }
