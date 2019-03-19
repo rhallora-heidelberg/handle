@@ -1,22 +1,23 @@
 package main
 
 import (
-	"fmt"
-	"github.com/julienschmidt/httprouter"
-	"github.com/rhallora-heidelberg/handle"
 	"log"
 	"net/http"
+	"strings"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/rhallora-heidelberg/handle"
 )
 
-func Hello(r *http.Request, _ httprouter.Params) handle.Respond {
-	return func(w http.ResponseWriter) {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprint(w, "Hello, World!")
+func Hello(r *http.Request, _ httprouter.Params) handle.Response {
+	return handle.Response{
+		StatusCode: http.StatusOK,
+		Body:       strings.NewReader("Hello, World!"),
 	}
 }
 
-func Empty(r *http.Request, _ httprouter.Params) handle.Respond {
-	return nil
+func Empty(r *http.Request, _ httprouter.Params) handle.Response {
+	return handle.Response{}
 }
 
 func main() {

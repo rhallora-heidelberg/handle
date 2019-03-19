@@ -45,7 +45,11 @@ func With(f func(r *http.Request, ps httprouter.Params) Response) httprouter.Han
 
 		res := f(r, ps)
 
-		w.WriteHeader(res.StatusCode)
+		// protect from invalid WriteHeader panics for zero-value Responses. All others are handled as-is
+		if res.StatusCode != 0 {
+			w.WriteHeader(res.StatusCode)
+		}
+
 		for _, opt := range res.HeaderOptions {
 			opt(w.Header())
 		}

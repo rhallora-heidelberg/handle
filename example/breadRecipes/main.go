@@ -1,26 +1,17 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
-	"github.com/rhallora-heidelberg/handle"
 	"log"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/rhallora-heidelberg/handle"
 )
 
-type doughRecipe struct {
-	Name     string
-	GFlour   int
-	GSalt    int
-	GStarter int
-	GWater   int
-}
-
-var recipeDB map[string]doughRecipe
+// init "database"
+var recipeDB = NewBreadDB()
 
 func main() {
-	// init "database"
-	recipeDB = make(map[string]doughRecipe)
-
 	router := httprouter.New()
 	router.GET("/bread/saveRecipe", handle.With(saveRecipe))
 	router.GET("/bread/getRecipe", handle.With(getRecipe))

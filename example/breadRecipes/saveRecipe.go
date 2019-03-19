@@ -1,36 +1,35 @@
 package main
 
 import (
-	"github.com/julienschmidt/httprouter"
-	"github.com/rhallora-heidelberg/handle"
-	"github.com/rhallora-heidelberg/handle/respond-with"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"github.com/julienschmidt/httprouter"
+	"github.com/rhallora-heidelberg/handle"
+	respondWith "github.com/rhallora-heidelberg/handle/respond-with"
 )
 
 // e.g. "http://localhost:8000/bread/saveRecipe?name=PompeiiSourdough&gFlour=1600&gStarter=200&gWater=950&gSalt=35"
-func saveRecipe(r *http.Request, _ httprouter.Params) handle.Respond {
+func saveRecipe(r *http.Request, _ httprouter.Params) handle.Response {
 	recipe := parseRecipeQuery(r.URL.Query())
 
 	// validate input
-	if errResponse := validateRecipe(recipe); errResponse != nil {
-		return errResponse
+	if err := recipe.Validate(); err != nil {
+		return respondWith.Errorf(http.StatusBadRequest, err.Error())
 	}
 
 	// attempt to store recipe
-	if _, exists := recipeDB[recipe.Name]; exists {
-		return respondWith.Errorf(http.StatusBadRequest, "error: recipe already exists, please choose a different name")
+	if err := recipeDB.Put(recipe); err != nil {
+		return respondWith.Errorf(http.StatusBadRequest, err.Error())
 	}
-
-	recipeDB[recipe.Name] = recipe
 
 	// success
 	return respondWith.Stringf("Ok! We saved your recipe under the name '%s'!", recipe.Name)
 }
 
-func parseRecipeQuery(qVals url.Values) doughRecipe {
-	recipe := doughRecipe{
+func parseRecipeQuery(qVals url.Values) DoughRecipe {
+	recipe := DoughRecipe{
 		Name: qVals.Get("name"),
 	}
 
@@ -49,28 +48,4 @@ func parseRecipeQuery(qVals url.Values) doughRecipe {
 	}
 
 	return recipe
-}
-
-func validateRecipe(recipe doughRecipe) handle.Respond {
-	// blank / zero-value errors
-	if recipe.Name == "" {
-		return respondWith.Errorf(http.StatusBadRequest, "error: recipe must have a name")
-	}
-
-	for _, field := range []int{recipe.GFlour, recipe.GWater, recipe.GSalt, recipe.GStarter} {
-		if field < 1 {
-			return respondWith.Errorf(http.StatusBadRequest, "error: recipe must have flour, water, salt and starter")
-		}
-	}
-
-	// special cases
-	if recipe.GFlour < recipe.GStarter {
-		return respondWith.Errorf(http.StatusBadRequest, "error: less flour than starter; acidity will be very high")
-	}
-
-	if recipe.GSalt > recipe.GFlour {
-		return respondWith.Errorf(http.StatusBadRequest, "error: more salt than flour; please don't")
-	}
-
-	return nil
 }

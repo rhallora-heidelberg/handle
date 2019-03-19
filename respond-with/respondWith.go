@@ -53,14 +53,22 @@ func Bytes(b []byte, status int) handle.Response {
 }
 
 func JSONOrError(obj interface{}) handle.Response {
-	b, err := json.Marshal(obj)
+	var b []byte
+	var err error
+
+	if m, ok := obj.(json.Marshaler); ok {
+		b, err = m.MarshalJSON()
+	} else {
+		b, err = json.Marshal(obj)
+	}
+
 	if err != nil {
 		return Errorf(http.StatusInternalServerError, "server failed to marshal JSON response")
 	}
 
-	setHeader := func(hdr http.Header) {
-		hdr.Set("Content-Type", "application/json")
-	}
+	return Bytes(b, http.StatusOK).WithHeaderOptions(setContentJSON)
+}
 
-	return Bytes(b, http.StatusOK).WithHeaderOptions(setHeader)
+func setContentJSON(hdr http.Header) {
+	hdr.Set("Content-Type", "application/json")
 }
