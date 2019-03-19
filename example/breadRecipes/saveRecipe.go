@@ -7,7 +7,7 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/rhallora-heidelberg/handle"
-	respondWith "github.com/rhallora-heidelberg/handle/respond-with"
+	"github.com/rhallora-heidelberg/handle/respondwith"
 )
 
 // e.g. "http://localhost:8000/bread/saveRecipe?name=PompeiiSourdough&gFlour=1600&gStarter=200&gWater=950&gSalt=35"
@@ -16,16 +16,16 @@ func saveRecipe(r *http.Request, _ httprouter.Params) handle.Response {
 
 	// validate input
 	if err := recipe.Validate(); err != nil {
-		return respondWith.Errorf(http.StatusBadRequest, err.Error())
+		return respondwith.Errorf(http.StatusBadRequest, err.Error())
 	}
 
 	// attempt to store recipe
 	if err := recipeDB.Put(recipe); err != nil {
-		return respondWith.Errorf(http.StatusBadRequest, err.Error())
+		return respondwith.Errorf(http.StatusBadRequest, err.Error())
 	}
 
 	// success
-	return respondWith.Stringf("Ok! We saved your recipe under the name '%s'!", recipe.Name)
+	return respondwith.Stringf("Ok! We saved your recipe under the name '%s'!", recipe.Name)
 }
 
 func parseRecipeQuery(qVals url.Values) DoughRecipe {

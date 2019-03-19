@@ -1,4 +1,4 @@
-package respondWith
+package respondwith
 
 import (
 	"bytes"
