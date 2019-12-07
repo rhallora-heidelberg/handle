@@ -12,6 +12,7 @@ import (
 )
 
 // Redirect is almost identical to http.Redirect. From that package:
+//
 // Redirect replies to the request with a redirect to url,
 // which may be a path relative to the request path.
 //
@@ -122,7 +123,7 @@ func htmlEscape(s string) string {
 }
 
 // copied from http.htmlReplacer
-var htmlReplacer = strings.NewReplacer(
+var htmlReplacer = strings.NewReplacer( //nolint:gochecknoglobals
 	"&", "&amp;",
 	"<", "&lt;",
 	">", "&gt;",

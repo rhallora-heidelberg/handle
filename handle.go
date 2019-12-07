@@ -1,7 +1,13 @@
 // Package handle provides a way to make the execution paths of http handlers easier to trace while eliminating the
 // possibility of certain mistakes like responding twice to an http request. It does this by providing the Response
-// type so that http responses can be treated primarily as return values instead of side-effects, as well as the With
-// function for ease of use.
+// type so that http responses can be treated primarily as return values instead of side-effects, as well as the
+// With function for ease of use. In short, this is like a poorman's IO monad for go.
+//
+// This package is intended to be small and modular. That is, you can decide whether to use this package or the more
+// flexible streaming semantics of standard go on a per-route basis.
+//
+// Package respondwith is also provided as an optional way to simplify some common types of responses, like strings
+// or JSON.
 package handle
 
 import (
@@ -48,11 +54,14 @@ func (r Response) WithHeaderOptions(opts ...HeaderOption) Response {
 	return r
 }
 
-// With transforms a function with the signature "func(r *http.Request, ps httprouter.Params) Response" into an httprouter.Handle.
+// With transforms a function with the signature "func(r *http.Request, ps httprouter.Params) Response" into
+// an httprouter.Handle.
 func With(f func(r *http.Request, ps httprouter.Params) Response) httprouter.Handle {
 	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-		var n int64
-		var err error
+		var (
+			n   int64
+			err error
+		)
 
 		res := f(r, ps)
 

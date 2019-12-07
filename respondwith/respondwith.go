@@ -53,9 +53,12 @@ func Bytes(b []byte, status int) handle.Response {
 }
 
 func JSONOrError(obj interface{}) handle.Response {
-	var b []byte
-	var err error
+	var (
+		b   []byte
+		err error
+	)
 
+	// for json.Marshalers, short-circuit to the appropriate method call. Otherwise call json.Marshal.
 	if m, ok := obj.(json.Marshaler); ok {
 		b, err = m.MarshalJSON()
 	} else {

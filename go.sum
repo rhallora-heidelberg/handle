@@ -1,2 +1,4 @@
 github.com/julienschmidt/httprouter v1.2.0 h1:TDTW5Yz1mjftljbcKqRcrYhd4XeOoI98t+9HbQbYf7g=
 github.com/julienschmidt/httprouter v1.2.0/go.mod h1:SYymIcj16QtmaHHD7aYtjjsJG7VTCxuUUipMqKk8s4w=
+github.com/uudashr/gocognit v1.0.0 h1:NST9SQhYHpFiyKdXn8UAiogdB1xkt5RnA1/rR/oBcGw=
+github.com/uudashr/gocognit v1.0.0/go.mod h1:j44Ayx2KW4+oB6SWMv8KsmHzZrOInQav7D3cQMJ5JUM=
