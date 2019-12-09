@@ -12,7 +12,7 @@ import (
 )
 
 // "Hello World" using handle.Response directly
-func Hello_direct(r *http.Request, _ httprouter.Params) handle.Response {
+func HelloDirect(r *http.Request, _ httprouter.Params) handle.Response {
 	return handle.Response{
 		StatusCode: http.StatusOK,
 		Body:       strings.NewReader("Hello, World!"),
@@ -20,7 +20,7 @@ func Hello_direct(r *http.Request, _ httprouter.Params) handle.Response {
 }
 
 // "Hello World" using respondwith
-func Hello_sugary(r *http.Request, _ httprouter.Params) handle.Response {
+func HelloSugary(r *http.Request, _ httprouter.Params) handle.Response {
 	return respondwith.Stringf("Hello, World!")
 }
 
@@ -31,8 +31,8 @@ func NotFound(r *http.Request, _ httprouter.Params) handle.Response {
 
 func main() {
 	router := httprouter.New()
-	router.GET("/hello1", handle.With(Hello_direct))
-	router.GET("/hello2", handle.With(Hello_sugary))
+	router.GET("/hello1", handle.With(HelloDirect))
+	router.GET("/hello2", handle.With(HelloSugary))
 	router.GET("/hl3releasedate", handle.With(NotFound))
 
 	log.Println("Listening on port 8000")
